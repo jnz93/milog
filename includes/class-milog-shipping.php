@@ -23,6 +23,7 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
             class Milog_Shipping_Method extends WC_Shipping_Method
             {
 
+                private $requestService;
                 /**
                  * Constructor for shipping class
                  * 
@@ -34,14 +35,12 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                     $this->id                   = 'milog';
                     $this->method_title         = __( 'Mercado Indústria Envios', 'milog' );
                     $this->method_description   = __( 'Cotação de fretes para marketplace consumindo API Melhor Envio', 'milog' );
-                    
+                    $this->requestService       = new Milog_Request_Service();
+
                     # Disponibilidade em países
                     $this->availability         = 'including';
                     $this->countries            = array(
                         'BR', # Brasil
-                        'US', # United States of America
-                        'DE', # Germany
-                        'IT', # Italy
                     );                    
                     $this->init();
 
@@ -104,55 +103,73 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                  */
                 public function calculate_shipping( $package )
                 {
-                    # adicionar toda lógica da cotação aqui;
-                    $weight = 0;
-                    $cost   = 0;
-                    $country = $package['destination']['country'];
+                    global $WCFM;
+                    $weight     = 0;
+                    $cost       = 0;
 
-                    foreach( $package['contents'] as $item_id => $values ) {
-                        $_product = $values['data'];
+                    # Package data
+                    $_content       = $package['contents'];
+                    $_storeId       = $package['vendor_id'];
+                    $_storeData     = wcfmmp_get_store( $_storeId );
+                    $_storeInfo     = $_storeData->get_shop_info();
+                    $_storeZipCode  = $_storeInfo['address']['zip'];
+                    $_destZipCode   = $package['destination']['postcode'];
+
+                    # Settings Request params
+                    $_route             = '/shipment/calculate';
+                    $_typeRequest       = 'POST';
+                    $_body              = array();
+                    $_body['from']      = [ 'postal_code' => $_storeZipCode ];
+                    $_body['to']        = [ 'postal_code' => $_destZipCode ];
+                    $_body['products']  = array();
+
+                    foreach( $_content as $item => $values ) {
+                        $_id        = $values['product_id'];                        
+                        $_product   = $values['data'];
+                        $_quantity  = $values['quantity'];
+                        $_name      = $_product->get_name();
+                        $_price     = $_product->get_price();
+                        $_weight    = $_product->get_weight();
+                        $_width     = $_product->get_width();
+                        $_height    = $_product->get_height();
+                        $_length    = $_product->get_length();
+
+                        $_body['products'][] = [
+                            'id'                => $_name,      # Title/Name
+                            'width'             => $_width,     # post_meta: width
+                            'height'            => $_height,    # post_meta: height
+                            'length'            => $_length,    # post_meta: length
+                            'weight'            => $_weight,    # post_meta: weight
+                            'insurance_value'   => 0,           # post_meta: valor de seguro
+                            'quantity'          => $_quantity   # data: quantity
+                        ];
                         $weight = $weight + $_product->get_weight() * $values['quantity'];
                     }
-                    $weight = wc_get_weight( $weight, 'kg' );
 
-                    if( $weight <= 10 ) {
-                        $cost = 5;
-                    } 
-                    elseif( $weight <= 50 ) {
-                        $cost = 10;
+                    $_request = $this->requestService->request( $_route, $_typeRequest, $_body );
+                    if( !empty( $_request ) ) {
+                        foreach( $_request as $item => $data ) {
+
+                            # Se a transportadora retornou erro pula para o próximo loop
+                            if( isset( $data->error ) ) continue;
+
+                            $_serviceId         = $data->id;
+                            $_serviceName       = $data->name;
+                            $_servicePrice      = $data->custom_price;
+                            $_serviceCurrency   = $data->currency;
+                            $_deliveryTime      = $data->delivery_time;
+                            $_companyId         = $data->company->id;
+                            $_companyName       = $data->company->name;
+                            $_companyThumb      = $data->company->picture;
+
+                            $rate = array(
+                                'id'    => $this->id . '-' . $_serviceName,
+                                'label' => $_serviceName,
+                                'cost'  => $_servicePrice
+                            );
+                            $this->add_rate( $rate );
+                        }
                     }
-                    else {
-                        $cost = 20;
-                    }
-
-                    $countryZones = array(
-                        'BR'    => 0, # Brasil
-                        'US'    => 3, # United States of America
-                        'DE'    => 1, # Germany
-                        'IT'    => 1, # Italy
-                    );
-                    
-                    $zonePrices = array(
-                        0   => 10,
-                        1   => 30,
-                        2   => 50,
-                        3   => 70
-                    );
-
-                    $zoneFromCountry = $countryZones[$country];
-                    $priceFromZone = $zonePrices[$zoneFromCountry];
-
-                    $cost += $priceFromZone;
-
-                    $rate = array(
-                        'id'    => $this->id,
-                        'label' => $this->title,
-                        'cost'  => $cost
-                    );
-                    $this->add_rate( $rate );
-                    // echo '<pre id="debug" style="display: none;">';
-                    // print_r($package);
-                    // echo '</pre>';
                 }
             }
         }
