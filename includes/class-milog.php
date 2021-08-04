@@ -128,6 +128,11 @@ class Milog {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-milog-request-service.php';
 
 		/**
+		 * The class responsible for requests to api melhor envio
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-milog-request-service.php';
+
+		/**
 		 * The class responsible for add new shipping method and logic for the cost of freight
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-milog-shipping.php';
