@@ -123,12 +123,12 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                     $_body['to']        = [ 'postal_code' => $_destZipCode ];
                     $_body['products']  = array();
 
-                    foreach( $_content as $item => $values ) {
-                        $_id        = $values['product_id'];                        
-                        $_product   = $values['data'];
-                        $_quantity  = $values['quantity'];
+                    foreach( $_content as $item => $data ) {
+                        $_id        = $data['product_id'];                        
+                        $_product   = $data['data'];
+                        $_quantity  = $data['quantity'];
                         $_name      = $_product->get_name();
-                        $_price     = $_product->get_price();
+                        $_insurance = $_product->get_price() * $_quantity;
                         $_weight    = $_product->get_weight();
                         $_width     = $_product->get_width();
                         $_height    = $_product->get_height();
@@ -140,10 +140,10 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             'height'            => $_height,    # post_meta: height
                             'length'            => $_length,    # post_meta: length
                             'weight'            => $_weight,    # post_meta: weight
-                            'insurance_value'   => 0,           # post_meta: valor de seguro
+                            'insurance_value'   => $_insurance, # post_meta: valor de seguro
                             'quantity'          => $_quantity   # data: quantity
                         ];
-                        $weight = $weight + $_product->get_weight() * $values['quantity'];
+                        // $weight = $weight + $_product->get_weight() * $values['quantity'];
                     }
 
                     $_request = $this->requestService->request( $_route, $_typeRequest, $_body );
@@ -164,8 +164,9 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
 
                             $rate = array(
                                 'id'    => $this->id . '-' . $_serviceName,
+                                // 'label' => $_serviceName . ' | we ' . $_weight . ' | wi ' . $_width . ' | he ' . $_height . ' | le ' . $_length,
                                 'label' => $_serviceName,
-                                'cost'  => $_servicePrice
+                                'cost'  => $_servicePrice 
                             );
                             $this->add_rate( $rate );
                         }
