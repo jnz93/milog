@@ -40,6 +40,18 @@ class Milog_Admin {
 	 */
 	private $version;
 
+
+	/**
+	 * Routes
+	 */
+	private $routeCart;
+
+	/**
+	 * Types of request
+	 */
+	private $typeRequestPost;
+	private $typeRequestGet;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
