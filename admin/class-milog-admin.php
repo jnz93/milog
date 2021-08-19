@@ -100,4 +100,40 @@ class Milog_Admin {
 
 	}
 
+	/**
+	 * Metódo responsável por enviar as cotações de frete do pedido para o carrinho melhor envio;
+	 * Este método é chamado no action woocommerce_order_status_changed
+	 * @link https://woocommerce.github.io/code-reference/hooks/hooks.html
+	 * 
+	 * @param integer $order_id
+	 * @param string $old_status
+	 * @param string $new_status
+	 * @param object $order
+	 * 
+	 * @since v1.0.0
+	 */
+	public function when_order_is_completed( $order_id, $old_status, $new_status, $order )
+	{
+		if( $new_status != 'completed' ) return;
+
+		$requestService	= new Milog_Request_Service();
+		$ticketService 	= new Milog_Ticket();
+
+		$freightsToCart = $ticketService->sanitize_freights_to_cart( $order_id );
+
+		if( !empty( $freightsToCart ) ){
+			foreach( $freightsToCart as $storeFreight ){
+				$sendToCart = $requestService->request( $routeCart, $typeRequest, $storeFreight );
+
+				# Log do retorno
+				$to = 'joanes.andrades@hotmail.com';
+				$subject = 'Frete Melhor Envio - Pedido: #' . $order_id;
+				$message = $sendToCart;
+
+				wp_mail( $to, $subject, $message);
+			}
+
+		}
+
+	}
 }
