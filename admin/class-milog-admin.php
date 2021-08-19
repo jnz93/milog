@@ -49,9 +49,16 @@ class Milog_Admin {
 	 */
 	public function __construct( $plugin_name, $version ) {
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->plugin_name 		= $plugin_name;
+		$this->version 			= $version;
+		$this->typeRequestPost  = 'POST';
+		$this->typeRequestGet	= 'GET';
+		$this->routeCart        = '/cart';
 
+		/**
+		 * Actions & Filters
+		 */
+		add_action( 'woocommerce_order_status_changed', array( $this, 'when_order_is_completed' ), 99, 4 );
 	}
 
 	/**
