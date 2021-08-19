@@ -137,6 +137,11 @@ class Milog {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-milog-shipping.php';
 
+		/**
+		 * The class with auxiliar public methods
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-milog-helpers.php';
+
 		$this->loader = new Milog_Loader();
 
 	}
