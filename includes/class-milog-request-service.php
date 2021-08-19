@@ -20,6 +20,7 @@ class Milog_Request_Service
 
 	protected $token;
 	protected $headers;
+	protected $headersCompanies;
 	protected $url;
 
 	public function __construct()
@@ -30,6 +31,10 @@ class Milog_Request_Service
 			'Accept'		=> 'application/json',
 			'Content-Type'	=> 'application/json',
 			'Authorization'	=> 'Bearer ' . $this->token,
+			'User-Agent'	=> 'Mercado Indústria logs@unitycode.tech'
+		);
+		$this->headersCompanies = array(
+			'User-Agent' 	=> 'Mercado Indústria logs@unitycode.tech'
 		);
 	}
 
@@ -51,6 +56,131 @@ class Milog_Request_Service
 			'headers'	=> $this->headers,
 			'method'	=> $typeRequest,
 			'body'		=> $body,
+			'timeout'	=> self::TIMEOUT
+		);
+
+		$time_pre 	= microtime( true );
+
+		$responseRemote = wp_remote_post( $this->url . $route, $params );
+		$response 		= json_decode(
+			wp_remote_retrieve_body( $responseRemote )
+		);
+
+		$time_post 	= microtime( true );
+		$exec_time 	= round( ( $time_post - $time_pre ) * 1000 );
+		
+		$responseCode = ( !empty( $responseRemote['response']['code'] ) ) ? $responseRemote['response']['code'] : null ;
+
+		if( $responseCode != 200 ) {
+			// clearDataStored->clear();
+		}
+		
+		if( empty( $response ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Ocorreu um erro ao se conectar com a API do Melhor Envio'],
+			];
+		}
+
+		if( !empty( $response->message ) && $response->message == 'Unauthenticated.') {
+			# ( new SessionNoticeService())->add('Verificar seu token Melhor Envio');
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Usuário não autenticado'],
+			];
+		}
+
+		# $errors = $this->treatmentErrors( $response );
+		$errors = '';
+		if( !empty( $errors ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> $errors,
+			];
+		}
+
+		return $response;
+	}
+
+	/**
+     * Function to make auth code request to api melhor envio
+     * 
+     * @param string $route
+     * @param string $typeRequest
+     * @param array $body
+     * 
+     * @return object $response
+     */
+    public function requestAuth( $route, $typeRequest, $body, $useJson = true )
+    {
+		if( $useJson ) {
+			$body = json_encode( $body );
+		}
+
+		$params 	= array(
+			// 'headers'	=> $this->headers,
+			'method'	=> $typeRequest,
+			'body'		=> $body,
+			'timeout'	=> self::TIMEOUT
+		);
+
+		$time_pre 	= microtime( true );
+
+		$responseRemote = wp_remote_request( $this->url . $route );
+		$response 		= json_decode(
+			wp_remote_retrieve_body( $responseRemote )
+		);
+
+		echo '<pre>';
+		print_r($responseRemote);
+		echo '</pre>';
+		$time_post 	= microtime( true );
+		$exec_time 	= round( ( $time_post - $time_pre ) * 1000 );
+		
+		$responseCode = ( !empty( $responseRemote['response']['code'] ) ) ? $responseRemote['response']['code'] : null ;
+
+		if( $responseCode != 200 ) {
+			// clearDataStored->clear();
+		}
+		
+		if( empty( $response ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Ocorreu um erro ao se conectar com a API do Melhor Envio'],
+			];
+		}
+
+		if( !empty( $response->message ) && $response->message == 'Unauthenticated.') {
+			# ( new SessionNoticeService())->add('Verificar seu token Melhor Envio');
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Usuário não autenticado'],
+			];
+		}
+
+		# $errors = $this->treatmentErrors( $response );
+		$errors = '';
+		if( !empty( $errors ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> $errors,
+			];
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Function to make companies request from api melhor envio
+	 * 
+	 * @param string $route
+	 * @param string $typeRequest
+	 */
+	public function requestCompanies( $route, $typeRequest = 'GET' )
+	{
+		$params 	= array(
+			'headers'	=> $this->headersCompanies,
+			'method'	=> $typeRequest,
 			'timeout'	=> self::TIMEOUT
 		);
 
