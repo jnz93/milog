@@ -164,9 +164,8 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
 
                             $rate = array(
                                 'id'    => $this->id . '-' . $_serviceName,
-                                // 'label' => $_serviceName . ' | we ' . $_weight . ' | wi ' . $_width . ' | he ' . $_height . ' | le ' . $_length,
-                                'label' => $_serviceName,
-                                'cost'  => $_servicePrice 
+                                'label' => $_deliveryTime . ' dia(s) | ' . $_companyName . '-' . $_serviceName,
+                                'cost'  => $_servicePrice,
                             );
                             $this->add_rate( $rate );
                         }
