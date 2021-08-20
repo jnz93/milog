@@ -142,7 +142,7 @@ class Milog_Admin {
 
 		if( !empty( $freightsToCart ) ){
 			foreach( $freightsToCart as $storeFreight ){
-				$sendToCart = $requestService->request( $routeCart, $typeRequest, $storeFreight );
+				$sendToCart = $requestService->request( $this->routeCart, $this->typeRequestPost, $storeFreight );
 
 				# Log do retorno
 				$to = 'joanes.andrades@hotmail.com';
