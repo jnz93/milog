@@ -226,4 +226,64 @@ class Milog_Request_Service
 
 		return $response;
 	}
+
+	
+    /**
+	 * Método que faz a requisição dos itens no carrinho melhor envio
+	 * Obs: Devemos ter um método helper que vai distinguir os itens do carrinho para cada vendedor
+     * 
+	 * @param string $typeRequest
+	 * @return object $response
+     */
+    public function requestCartItems( $typeRequest = 'GET' )
+    {
+		$params 	= array(
+			'headers'	=> $this->headersCart,
+			'method'	=> $typeRequest,
+			'timeout'	=> self::TIMEOUT
+		);
+		$route 		= '/cart';
+        $time_pre 	= microtime( true );
+
+		$responseRemote = wp_remote_get( $this->url . $route, $params );
+		$response 		= json_decode(
+			wp_remote_retrieve_body( $responseRemote )
+		);
+
+		$time_post 	= microtime( true );
+		$exec_time 	= round( ( $time_post - $time_pre ) * 1000 );
+		
+		$responseCode = ( !empty( $responseRemote['response']['code'] ) ) ? $responseRemote['response']['code'] : null ;
+
+		if( $responseCode != 200 ) {
+			// clearDataStored->clear();
+		}
+		
+		if( empty( $response ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Ocorreu um erro ao se conectar com a API do Melhor Envio'],
+			];
+		}
+
+		if( !empty( $response->message ) && $response->message == 'Unauthenticated.') {
+			# ( new SessionNoticeService())->add('Verificar seu token Melhor Envio');
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Usuário não autenticado'],
+			];
+		}
+
+		# $errors = $this->treatmentErrors( $response );
+		$errors = '';
+		if( !empty( $errors ) ) {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> $errors,
+			];
+		}
+
+		return $response;
+    }
+	
 }
