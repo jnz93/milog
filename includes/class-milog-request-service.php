@@ -285,5 +285,54 @@ class Milog_Request_Service
 
 		return $response;
     }
-	
+
+	/**
+	 * Método para remover um ou mais itens do carrinho melhor envio
+	 * 
+	 * @param string $ticketId
+	 * @param string $typeRequest
+	 * 
+	 * @return object
+	 */
+	public function removeCartItems( $ticketId, $typeRequest = 'DELETE' )
+	{
+		$params 	= array(
+			'headers'	=> $this->headers,
+			'method'	=> $typeRequest,
+			'timeout'	=> self::TIMEOUT
+		);
+		$route 		= '/cart';
+        $time_pre 	= microtime( true );
+
+		$responseRemote = wp_remote_request( $this->url . $route . '/' . $ticketId, $params );
+		$response 		= json_decode(
+			wp_remote_retrieve_body( $responseRemote )
+		);
+
+		$time_post 	= microtime( true );
+		$exec_time 	= round( ( $time_post - $time_pre ) * 1000 );
+		
+		$responseCode = ( !empty( $responseRemote['response']['code'] ) ) ? $responseRemote['response']['code'] : null ;
+
+		if( !empty( $response->message ) && $response->message == 'Unauthenticated.') {
+			# ( new SessionNoticeService())->add('Verificar seu token Melhor Envio');
+			return (object) [
+				'success'	=> false,
+				'errors'	=> ['Usuário não autenticado'],
+			];
+		}
+
+		if( empty( $response ) && $responseCode == 204 ) {
+			return (object) [
+				'success'	=> 'Removido com sucesso!',
+				'errors'	=> false,
+			];
+		} else {
+			return (object) [
+				'success'	=> false,
+				'errors'	=> $response->message,
+			];
+		}
+	}
+
 }
