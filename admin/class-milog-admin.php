@@ -135,24 +135,19 @@ class Milog_Admin {
 	{
 		if( $new_status != 'completed' ) return;
 
-		$requestService	= new Milog_Request_Service();
-		$ticketService 	= new Milog_Ticket();
-
-		$freightsToCart = $ticketService->sanitize_freights_to_cart( $order_id );
+		$freightsToCart = $this->ticketService->sanitize_freights_to_cart( $order_id );
 
 		if( !empty( $freightsToCart ) ){
-			foreach( $freightsToCart as $storeFreight ){
-				$sendToCart = $requestService->request( $this->routeCart, $this->typeRequestPost, $storeFreight );
-
-				# Log do retorno
-				$to = 'joanes.andrades@hotmail.com';
-				$subject = 'Frete Melhor Envio - Pedido: #' . $order_id;
-				$message = $sendToCart;
-
-				wp_mail( $to, $subject, $message);
+			$ticketsInCart = array();
+			foreach( $freightsToCart as $storeFreight => $data ){
+				$ticketsInCart[$storeFreight] = $this->requestService->request( $this->routeCart, $this->typeRequestPost, $data );
 			}
-
+			
+			if( !empty( $ticketsInCart ) ){
+				$this->ticketService->saveTicketDataOnOrder( $order_id, $ticketsInCart );
+			} else {
+				# Enviar mensagem de erro
+			}
 		}
-
 	}
 }

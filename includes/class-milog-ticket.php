@@ -40,4 +40,34 @@ class Milog_Ticket
 
         return $bodyStructure;
 	}
+
+    /**
+     * Método responsável por salvar dados do frete cotado no carrinho melhor envio
+     * 
+     * @param integer $orderId
+     * @param object $cartItems
+     * 
+     * @return void
+     */
+    public function saveTicketDataOnOrder( $orderId, $tickets )
+    {
+        $field = 'slug';
+        foreach( $tickets as $store => $data ){
+            $storeData  = get_user_by( $field, $store );
+            $storeId    = $storeData->ID;
+            
+            $keysMap = [
+                'id'        => '_' . $storeId . '_ticket_id',
+                'protocol'  => '_' . $storeId . '_ticket_protocol',
+                'status'    => '_' . $storeId . '_ticket_status',
+                'created_at'=> '_' . $storeId . '_ticket_created_at',
+                'updated_at'=> '_' . $storeId . '_ticket_updated_at'
+            ];
+
+            foreach( $keysMap as $key => $metaKey ){
+                update_post_meta( $orderId, $metaKey, $data->$key );
+            }
+        }
+    }
+
 }
