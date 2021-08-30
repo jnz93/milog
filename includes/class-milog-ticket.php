@@ -91,4 +91,24 @@ class Milog_Ticket
 		return $request;
 	}
 
+	/**
+	 * Método que gera a etiqueta comprada antes de disponibilizar para impressão
+	 * 
+	 * @param string $purchaseId
+	 * 
+	 * @return void
+	 */
+	public function generateTicket( $purchaseId )
+	{
+		$route 			= '/shipment/generate';
+		$typeRequest 	= 'POST';
+		$body			= array();
+		$body['orders'] = [
+			$purchaseId,
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		return $request;
+	}
 }
