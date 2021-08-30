@@ -74,6 +74,7 @@ class Milog_Public {
 		 */
 		add_filter( 'wcfm_orders_additional_info_column_label', array( $this, 'additional_colunm_store_orders' ) );
 		add_filter( 'wcfm_orders_additonal_data_hidden', '__return_false' );
+		add_filter( 'wcfm_orders_additonal_data', array( $this, 'additional_column_data_store_orders' ), 50, 2 );
 	}
 
 	/**
@@ -138,5 +139,30 @@ class Milog_Public {
 	{
 		$affiliate_column_label = 'Etiqueta(s)';
 		return $affiliate_column_label;
+	}
+	
+	/**
+	 * Adicionando os botões necessários na coluna Etiqueta(s) na página de pedidos do painel WCFM
+	 */
+	public function additional_column_data_store_orders( $affiliate_column_data, $order_id ) {
+
+		$order 				= wc_get_order( $order_id );
+		$order_status 	 	= $order->get_status();
+		$storeId 			= get_current_user_id();
+		$ticketPurchased 	= get_post_meta( $order_id, '_' . $storeId . '_ticket_status', true );
+		$buttons 			= '';
+		if( $order_status == 'completed' ) {
+			$buttons 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
+			$buttons 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
+			$buttons 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
+			// $cartButtons 		.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
+			// $purchasedButtons 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
+		} else {
+			$buttons = '<span class="">Recurso indisponível</span>';
+		}
+
+
+		$affiliate_column_data = $buttons;
+		return $affiliate_column_data;
 	}
 }
