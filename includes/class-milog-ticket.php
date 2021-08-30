@@ -211,4 +211,35 @@ class Milog_Ticket
 		return $request;
 	}
 
+	/**
+	 * Salvar dados de compra do frete no pedido
+	 * 
+	 * @param mixed $data
+	 * @param integer $orderId
+	 * @param integer $storeId
+	 * 
+	 * @return void
+	 */
+	public function savePurchasedTicketDataOnOrder( $data, $orderId, $storeId )
+	{
+
+		$errors = [];
+		$response = false;
+		foreach( $data as $key => $value )
+		{
+			$metaKey 	= '_' . $storeId . '_ticket_' . $key;
+			$saved 		= update_post_meta( $orderId, $metaKey, $value );
+
+			if( ! $saved ){
+				$errors[] = $metaKey . ' : ' . $value;
+			}
+		}
+
+		if( empty( $errors ) ){
+			$response = true;
+		}
+
+		return $response;
+	}
+
 }
