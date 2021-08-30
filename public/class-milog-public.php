@@ -68,6 +68,12 @@ class Milog_Public {
 		 * Enqueue scripts
 		 */
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+
+		/**
+		 * Filters para adicionar nova coluna na tabela de pedidos da loja
+		 */
+		add_filter( 'wcfm_orders_additional_info_column_label', array( $this, 'additional_colunm_store_orders' ) );
+		add_filter( 'wcfm_orders_additonal_data_hidden', '__return_false' );
 	}
 
 	/**
@@ -124,4 +130,13 @@ class Milog_Public {
 		));
 	}
 
+
+	/**
+	 * Adicionando a coluna Etiqueta(s) na página de pedidos do painel WCFM
+	 */	
+	public function additional_colunm_store_orders( $affiliate_column_label )
+	{
+		$affiliate_column_label = 'Etiqueta(s)';
+		return $affiliate_column_label;
+	}
 }
