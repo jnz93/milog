@@ -10,11 +10,25 @@
  */
 class Milog_Ticket
 {
+    protected $requestService;
+
     protected $helpers;
+
+    protected $typeRequestPost;
+
+    protected $typeRequestGet;
+
+    protected $routeCart;
 
     public function __construct()
     {
-        $this->helpers = new Milog_Helpers();
+        $this->requestService   = new Milog_Request_Service();
+        $this->helpers          = new Milog_Helpers();
+
+        $this->typeRequestPost  = 'POST';
+		$this->typeRequestGet	= 'GET';
+		$this->routeCart        = '/cart';
+
     }
     
 	/**
