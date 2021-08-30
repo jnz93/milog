@@ -111,4 +111,26 @@ class Milog_Ticket
 
 		return $request;
 	}
+
+	/**
+	 * Método responsável por gerar o link de impressão de etiquetas
+	 * 
+	 * @param string $purchaseId
+	 * 
+	 * @return object $request
+	 */
+	public function printTicket( $purchaseId )
+	{
+		$route  		= '/shipment/print';
+		$typeRequest 	= 'POST';
+		$body 			= array();
+		$body['mode']	= 'public';
+		$body['orders']	= [
+			$purchaseId,
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		return $request;
+	}
 }
