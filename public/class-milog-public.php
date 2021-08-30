@@ -75,6 +75,13 @@ class Milog_Public {
 		add_filter( 'wcfm_orders_additional_info_column_label', array( $this, 'additional_colunm_store_orders' ) );
 		add_filter( 'wcfm_orders_additonal_data_hidden', '__return_false' );
 		add_filter( 'wcfm_orders_additonal_data', array( $this, 'additional_column_data_store_orders' ), 50, 2 );
+
+		/**
+		 * Ajax action
+		 */
+		add_action( 'wp_ajax_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
+		add_action( 'wp_ajax_nopriv_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
+
 	}
 
 	/**
@@ -164,5 +171,64 @@ class Milog_Public {
 
 		$affiliate_column_data = $buttons;
 		return $affiliate_column_data;
+	}
+
+	/**
+	 * Callback para requisições ajax do painel da loja
+	 */
+	public function milog_store_service_request_callback()
+	{
+		check_ajax_referer( 'store-ajax-nonce', 'nonce' );
+		$nonce 		= $_POST['nonce'];
+		$type 		= $_POST['type'];
+		$orderId 	= $_POST['orderId'];
+		$storeId 	= $_POST['storeId'];
+		$response	= '';
+
+		$keysMap = [
+			'_'. $storeId .'_ticket_id',
+			'_'. $storeId .'_ticket_protocol',
+			'_'. $storeId .'_ticket_status',
+			'_'. $storeId .'_ticket_created_at',
+			'_'. $storeId .'_ticket_updated_at'
+		];
+
+		$ticketId 			= get_post_meta( $orderId, '_'. $storeId .'_ticket_id', true );
+		$purchasedTicketId 	= get_post_meta( $orderId, '_' . $storeId . '_ticket_purchased_orders_id', true );
+		
+		// echo 'Id: ' . $purchasedTicketId;
+		switch ( $type ) {
+			case 'purchase-ticket':
+				$purchasedResponse  = $this->ticketService->purchaseCartItems( $ticketId );
+				$sanitizedResponse 	= $this->helpers->sanitizePurchasedResponse( $purchasedResponse );
+				$response 			= $this->ticketService->savePurchasedTicketDataOnOrder( $sanitizedResponse, $orderId, $storeId ); # Salvando dados da compra no pedido
+				$response 			= 'success';
+				break;
+
+			case 'print-ticket':
+				/**
+				 * Outra ideia é chamar os dois métodos abaixo na compra da etiqueta
+				 * Dessa forma podemos salvar a URL de impressão em um meta-campo do pedido
+				 * Com isso sempre que quiser imprimir a etiqueta não repetira as requisições
+				 */
+				$request = $this->ticketService->generateTicket( $purchasedTicketId );
+				$request = $this->ticketService->printTicket( $purchasedTicketId );
+				$response = $request->url;
+				break;
+
+			case 'tracking-ticket':
+				$response = $this->ticketService->trackTicket( $purchasedTicketId );
+				break;
+
+			case 'cancel-ticket':
+				$response = $this->ticketService->removeCartItems( $ticketId );
+				break;
+	
+			default:
+				echo 'Tipo ' . $type . ' Inválido!';
+				break;
+		}
+		
+		die($response);
 	}
 }
