@@ -69,5 +69,26 @@ class Milog_Ticket
             }
         }
     }
+    
+    /**
+	 * Método de compra dos itens no carrinho melhor envio
+	 * 
+	 * @param string $ticketId
+	 * @param string $typeRequest
+	 * 
+	 * @return object $response
+	 */
+	public function purchaseCartItems( $ticketId )
+	{
+		$route 			= '/shipment/checkout';
+		$typeRequest 	= 'POST';
+		$body['orders'] = [
+			$ticketId,
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		return $request;
+	}
 
 }
