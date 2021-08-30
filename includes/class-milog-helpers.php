@@ -374,4 +374,23 @@ class Milog_Helpers{
         }
         return $bodyStructure;
     }
+
+    /**
+	 * Sanitize retorno da compra de etiquetas
+	 * 
+	 * @param object $response
+	 * @return string $sanitizedData
+	 */
+	public function sanitizePurchasedResponse( $response )
+	{
+		$sanitizedData = array(
+			'purchased_id'			=> $response->purchase->id,
+			'purchased_protocol'	=> $response->purchase->protocol,
+			'purchased_status'		=> $response->purchase->status,
+			'purchased_paid_at'		=> $response->purchase->paid_at,
+			'purchased_orders_id'	=> $response->purchase->orders[0]->id,
+		);
+
+		return $sanitizedData;
+	}
 }
