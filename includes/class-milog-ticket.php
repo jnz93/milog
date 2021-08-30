@@ -150,4 +150,29 @@ class Milog_Ticket
 
 		return $request;
 	}
+
+	/**
+	 * Método responsável por cancelar etiquetas
+	 * 
+	 * @param string $orderId
+	 * @param string $description
+	 * 
+	 * @return object $response
+	 */
+	public function cancelTicket( $orderId, $description )
+	{
+		$route 			= '/shipment/cancel';
+		$typeRequest 	= 'POST';
+		$reasonId 		= 2;
+		$body 			= array();
+		$body['order']	= [
+			'id' 			=> $orderId,
+			'reason_id'		=> $reasonId,
+			'description' 	=> $description
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		return $request;
+	}
 }
