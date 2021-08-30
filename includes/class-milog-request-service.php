@@ -352,7 +352,7 @@ class Milog_Request_Service
 	 * 
 	 * @return object
 	 */
-	public function removeCartItems( $ticketId, $typeRequest = 'DELETE' )
+	public function requestDel( $ticketId, $typeRequest = 'DELETE' )
 	{
 		$params 	= array(
 			'headers'	=> $this->headers,
