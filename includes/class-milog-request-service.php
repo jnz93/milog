@@ -22,6 +22,7 @@ class Milog_Request_Service
 	protected $headers;
 	protected $headersCompanies;
 	protected $url;
+	protected $headersCart;
 
 	public function __construct()
 	{
@@ -35,6 +36,11 @@ class Milog_Request_Service
 		);
 		$this->headersCompanies = array(
 			'User-Agent' 	=> 'Mercado Indústria logs@unitycode.tech'
+		);
+		$this->headersCart 	= array(
+			'Accept' 		=> 'application/json',
+			'Authorization'	=> 'Bearer ' . $this->token,
+			'User-Agent' 	=> 'Aplicação Mercado Indústria logs@unitycode.tech'
 		);
 	}
 
