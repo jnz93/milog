@@ -175,4 +175,26 @@ class Milog_Ticket
 
 		return $request;
 	}
+
+	/**
+	 * Método que faz o rastreamento de tickets
+	 * 
+	 * @param string $purchaseId
+	 * 
+	 * @return object $response
+	 */
+	public function trackTicket( $purchaseId )
+	{
+		$route 			= '/shipment/tracking';
+		$typeRequest 	= 'POST';
+		$body 			= array();
+		$body['orders']	= [
+			$purchaseId,
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		return $request;
+	}
+
 }
