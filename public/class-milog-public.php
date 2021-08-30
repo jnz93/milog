@@ -63,6 +63,11 @@ class Milog_Public {
 		$this->requestService	= new Milog_Request_Service();
 		$this->ticketService 	= new Milog_Ticket();
 		$this->helpers          = new Milog_Helpers();
+
+		/**
+		 * Enqueue scripts
+		 */
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -109,6 +114,14 @@ class Milog_Public {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/milog-public.js', array( 'jquery' ), $this->version, false );
 
+		/**
+		 * Configurando o arquivo e váriaves JS para requisições AJAX
+		 */
+		wp_enqueue_script( 'milog_store_ajax', plugin_dir_url( __FILE__ ) . 'js/milog-stores-ajax.js', '', '1.0', true );
+		wp_localize_script( 'milog_store_ajax', 'storeAjax', array(
+			'url'	=> admin_url( 'admin-ajax.php' ),
+			'nonce'	=> wp_create_nonce( 'store-ajax-nonce' )
+		));
 	}
 
 }
