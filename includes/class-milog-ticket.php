@@ -133,4 +133,21 @@ class Milog_Ticket
 
 		return $request;
 	}
+
+	/**
+	 * Método para realizar pesquisa de uma etiqueta através de alguns dados, como por exemplo: Id, tracking, protocol.
+	 * 
+	 * @param string $term
+	 * 
+	 * @return object $request
+	 */
+	public function searchTicket( $term )
+	{
+		$route 	= '/orders/search?q=';
+
+		# orders/search?q={id|protocol|tracking|authorization_code|self_tracking}
+		$request = $this->requestService->requestGet( $term, $route );
+
+		return $request;
+	}
 }
