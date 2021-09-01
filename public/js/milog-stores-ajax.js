@@ -37,12 +37,11 @@ function milogTicketRequest(el){
                 break;
         
             case 'print-ticket':
-                console.log(response);
                 window.open( response, '_blank').focus();
                 break;
 
             case 'tracking-ticket':
-                alert('Recurso desabilitado');
+                alert('Status: ' + response);
                 break;
 
             case 'cancel-ticket':

@@ -393,4 +393,24 @@ class Milog_Helpers{
 
 		return $sanitizedData;
 	}
+
+    /**
+     * Sanitize retorno da requisição de rastreio
+     * 
+     * @param object $response
+     * @return mixed $sanitizedData
+     */
+    public function sanitizeTrackingResponse( $response )
+    {
+        $sanitizedData;
+        foreach( $response as $key => $data ){
+            $sanitizedData = [
+                'status'        => $data->status,
+                'tracking_code' => $data->tracking,
+                'posted_at'     => $data->posted_at
+            ];
+        }
+
+        return $sanitizedData;
+    }
 }

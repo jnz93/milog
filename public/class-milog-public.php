@@ -278,7 +278,14 @@ class Milog_Public {
 				break;
 
 			case 'tracking-ticket':
-				$response = $this->ticketService->trackTicket( $purchasedTicketId );
+				/**
+				 * Criar método para salvar os dados de retorno dessa requisição. Talvez o ideal seja realocar esses métodos
+				 * para actions wp-cron salvando os dados de retorno no banco wp. Dessa forma o usuário não precisa fazer uma requisição
+				 * para o melhor envio todas as vezes que clicar em rastreio.
+				 */
+				$response 			= $this->ticketService->trackTicket( $purchasedTicketId );
+				$sanitizedResponse 	= $this->helpers->sanitizeTrackingResponse( $response );
+				$response 			= $sanitizedResponse['status'];
 				break;
 
 			case 'cancel-ticket':
