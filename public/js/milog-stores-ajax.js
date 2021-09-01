@@ -45,7 +45,7 @@ function milogTicketRequest(el){
                 break;
 
             case 'cancel-ticket':
-                alert('Recurso desabilitado')
+                alert('Recurso desabilitado temporariamente.');
                 break;
 
             default:

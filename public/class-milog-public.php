@@ -228,6 +228,7 @@ class Milog_Public {
 		if( !empty( $stores ) ){
 			foreach( $stores as $storeId ){
 				$buttons .= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear Pacote</button>';
+				$buttons .= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar Envio</button>';
 			}
 		}
 
@@ -289,7 +290,7 @@ class Milog_Public {
 				break;
 
 			case 'cancel-ticket':
-				$response = $this->ticketService->removeCartItems( $ticketId );
+				$response = $this->ticketService->isCancellableTicket( $purchasedTicketId );
 				break;
 	
 			default:

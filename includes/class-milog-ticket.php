@@ -242,4 +242,23 @@ class Milog_Ticket
 		return $response;
 	}
 
+	/**
+	 * Verificar se a etiqueta é elegível para cancelamento
+	 * 
+	 * @param mixed $ticketId
+	 * @return object $request
+	 */
+	public function isCancellableTicket( $ticketId )
+	{
+		$route 			= '/shipment/cancellable';
+		$typeRequest 	= 'POST';
+		$body 			= array();
+		$body['orders']	= [
+			$ticketId,
+		];
+
+		$request = $this->requestService->request( $route, $typeRequest, $body );
+
+		// return $request;
+	}
 }
