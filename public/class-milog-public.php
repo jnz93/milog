@@ -77,6 +77,12 @@ class Milog_Public {
 		add_filter( 'wcfm_orders_additonal_data', array( $this, 'additional_column_data_store_orders' ), 50, 2 );
 
 		/**
+		 * Filters para adicioanr nova coluna na tabela de pedidos do cliente
+		 */
+		add_filter( 'woocommerce_my_account_my_orders_columns', array( $this, 'additional_columns_customer_orders_list' ) );
+		add_filter( 'woocommerce_my_account_my_orders_column_order-shipment-track', array( $this, 'add_button_shipment_track_in_customer_orders_list' ) );
+
+		/**
 		 * Ajax action
 		 */
 		add_action( 'wp_ajax_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
@@ -171,6 +177,61 @@ class Milog_Public {
 
 		$affiliate_column_data = $buttons;
 		return $affiliate_column_data;
+	}
+
+	/**
+	 * Adicionando novas colunas na tabela de pedidos do painel do cliente WC
+	 * 
+	 * @param array $columns
+	 */
+	public function additional_columns_customer_orders_list( $columns )
+	{
+		$newColumns = array();
+
+		foreach( $columns as $key => $name ){
+			$newColumns[$key] = $name;
+
+			if( $key === 'order-actions' ){
+				$newColumns['order-shipment-track'] = __( 'Entrega', 'milog' );
+			}
+		}
+
+		return $newColumns;
+	}
+
+	/**
+	 * Adicionando o botão "Rastrear pacote" na coluna "entrega"
+	 * Tabela de pedidos do cliente
+	 * 
+	 * @param object $order
+	 */
+	public function add_button_shipment_track_in_customer_orders_list( $order )
+	{
+		$order_id 		= $order->get_id();
+		$items 			= $order->get_items();
+
+		# Coletando lojas no pedido
+		$stores 		= array();
+		if( !empty( $items ) ){
+			foreach( $items as $product => $data ){
+				$productId      = $data->get_product_id();
+				$storeId    	= wcfm_get_vendor_id_by_post( $productId );
+
+				if( !in_array( $storeId, $stores ) ){
+					$stores[]	= $storeId;
+				}
+			}
+		}
+		
+		# Criando os botões com base no número de lojas
+		$buttons 		= '';
+		if( !empty( $stores ) ){
+			foreach( $stores as $storeId ){
+				$buttons .= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear Pacote</button>';
+			}
+		}
+
+		echo $buttons;
 	}
 
 	/**
