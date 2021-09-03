@@ -80,7 +80,7 @@ class Milog_Public {
 		 * Filters para adicioanr nova coluna na tabela de pedidos do cliente
 		 */
 		add_filter( 'woocommerce_my_account_my_orders_columns', array( $this, 'additional_columns_customer_orders_list' ) );
-		add_filter( 'woocommerce_my_account_my_orders_column_order-shipment-track', array( $this, 'add_button_shipment_track_in_customer_orders_list' ) );
+		add_filter( 'woocommerce_my_account_my_orders_column_order-shipment-track', array( $this, 'add_buttons_for_shipment_actions_in_customer_orders_list' ) );
 
 		/**
 		 * Ajax action
@@ -205,7 +205,7 @@ class Milog_Public {
 	 * 
 	 * @param object $order
 	 */
-	public function add_button_shipment_track_in_customer_orders_list( $order )
+	public function add_buttons_for_shipment_actions_in_customer_orders_list( $order )
 	{
 		$order_id 		= $order->get_id();
 		$items 			= $order->get_items();
