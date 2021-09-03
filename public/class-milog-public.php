@@ -144,7 +144,6 @@ class Milog_Public {
 		));
 	}
 
-
 	/**
 	 * Adicionando a coluna Etiqueta(s) na página de pedidos do painel WCFM
 	 */	
@@ -156,6 +155,11 @@ class Milog_Public {
 	
 	/**
 	 * Adicionando os botões necessários na coluna Etiqueta(s) na página de pedidos do painel WCFM
+	 * 
+	 * @param mixed $affiliate_column_data
+	 * @param integer $order_id
+	 * 
+	 * @return mixed $affiliate_column_data
 	 */
 	public function additional_column_data_store_orders( $affiliate_column_data, $order_id ) {
 
@@ -163,19 +167,18 @@ class Milog_Public {
 		$order_status 	 	= $order->get_status();
 		$storeId 			= get_current_user_id();
 		$ticketPurchased 	= get_post_meta( $order_id, '_' . $storeId . '_ticket_status', true );
-		$buttons 			= '';
+		$output 			= '';
 		if( $order_status == 'completed' ) {
-			$buttons 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
-			$buttons 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
-			$buttons 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
-			// $cartButtons 		.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
-			// $purchasedButtons 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
+			$output 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
+			$output 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
+			$output 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
+			// $output 	.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
+			// $output 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
 		} else {
-			$buttons = '<span class="">Recurso indisponível</span>';
+			$output = '<span class="">Etiqueta Indisponível</span>';
 		}
 
-
-		$affiliate_column_data = $buttons;
+		$affiliate_column_data = $output;
 		return $affiliate_column_data;
 	}
 
