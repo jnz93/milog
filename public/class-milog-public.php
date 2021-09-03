@@ -171,14 +171,18 @@ class Milog_Public {
 		if( $order_status == 'completed' ) {
 
 			if( $ticket_status == 'paid' ){
-				$output 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
-				$output 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
-				$output 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display: block;" class="after-paid" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Imprimir</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display: block;" class="after-paid" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Rastrear</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display: block;" class="after-paid" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Cancelar</button>';	
 			} else {
-				$output 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
-				// $output 	.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display:block;" class="before-paid" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Comprar</button>';
+				// $output 	.= '<button style="margin-bottom: 5px; display:block;" class="before-paid" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Remover</button>';
+				
+				$output 	.= '<button style="margin-bottom: 5px; display: none;" class="after-paid" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Imprimir</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display: none;" class="after-paid" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Rastrear</button>';
+				$output 	.= '<button style="margin-bottom: 5px; display: none;" class="after-paid" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))">Cancelar</button>';	
 			}
-			
+
 		} else {
 			$output = '<span class="">Etiqueta Indisponível</span>';
 		}
@@ -235,8 +239,8 @@ class Milog_Public {
 		$buttons 		= '';
 		if( !empty( $stores ) ){
 			foreach( $stores as $storeId ){
-				$buttons .= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear Pacote</button>';
-				$buttons .= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar Envio</button>';
+				$buttons .= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))" style="margin-bottom: 5px;">Rastrear Pacote</button>';
+				$buttons .= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(jQuery(this))" style="margin-bottom: 5px;">Cancelar Envio</button>';
 			}
 		}
 
