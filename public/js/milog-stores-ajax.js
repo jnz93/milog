@@ -18,6 +18,7 @@ function milogTicketRequest(el){
         data: body,
         beforeSend: function(xhr){
             console.log('carregando...');
+            jQuery('#container-spinner').removeClass('disabled-spinner');
         },
         error: function( err ){
             console.log('[Milog Store Request Error]');
@@ -25,6 +26,8 @@ function milogTicketRequest(el){
         }
     })
     .done( function( response ){
+        jQuery('#container-spinner').addClass('disabled-spinner');
+
         switch (type) {
             case 'purchase-ticket':
                 if( response == 'success' ){
