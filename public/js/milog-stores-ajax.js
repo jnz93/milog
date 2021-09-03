@@ -1,9 +1,9 @@
 
 function milogTicketRequest(el){
 
-    let type    = el.getAttribute('data-action'),
-        orderId = el.getAttribute('data-order-id'),
-        storeId = el.getAttribute('data-store-id');
+    let type    = el.attr('data-action'),
+        orderId = el.attr('data-order-id'),
+        storeId = el.attr('data-store-id');
 
     var body = {};
     body.action     = 'milog_store_service_request';
@@ -29,7 +29,9 @@ function milogTicketRequest(el){
             case 'purchase-ticket':
                 if( response == 'success' ){
                     alert('Compra realizada com sucesso!');
-                    el.setAttribute("disabled", "disabled");
+                    el.hide();
+                    el.siblings('.before-paid').hide();
+                    el.siblings('.after-paid').show();
                 } else {
                     alert('Houve um problema ao comprar a etiqueta. Tente novamente!');
                 }
