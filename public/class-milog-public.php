@@ -166,14 +166,19 @@ class Milog_Public {
 		$order 				= wc_get_order( $order_id );
 		$order_status 	 	= $order->get_status();
 		$storeId 			= get_current_user_id();
-		$ticketPurchased 	= get_post_meta( $order_id, '_' . $storeId . '_ticket_status', true );
+		$ticket_status		= get_post_meta( $order_id, '_' . $storeId . '_ticket_purchased_status', true );
 		$output 			= '';
 		if( $order_status == 'completed' ) {
-			$output 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
-			$output 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
-			$output 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
-			// $output 	.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
-			// $output 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
+
+			if( $ticket_status == 'paid' ){
+				$output 	.= '<button class="" data-action="print-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Imprimir</button>';
+				$output 	.= '<button class="" data-action="tracking-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Rastrear</button>';
+				$output 	.= '<button class="" data-action="cancel-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Cancelar</button>';
+			} else {
+				$output 	.= '<button class="" data-action="purchase-ticket" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Comprar</button>';
+				// $output 	.= '<button class="" data-action="remove-cart" data-order-id="'. $order_id .'" data-store-id="'. $storeId .'" onclick="milogTicketRequest(this)" style="margin-bottom: 5px;">Remover</button>';
+			}
+			
 		} else {
 			$output = '<span class="">Etiqueta Indisponível</span>';
 		}
