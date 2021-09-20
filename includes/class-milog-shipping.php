@@ -96,6 +96,7 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
 
                 /**
                  * This function is used to calculate the shipping cost. Within this function, we can check for weights, dimensions, and other parameters
+                 * Esse método é executado para calcular o frete de cada loja no carrinho
                  * 
                  * @param mixed $package
                  * @access public
@@ -104,8 +105,6 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                 public function calculate_shipping( $package )
                 {
                     global $WCFM;
-                    $weight     = 0;
-                    $cost       = 0;
 
                     # Package data
                     $_content       = $package['contents'];
@@ -143,13 +142,24 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             'insurance_value'   => $_insurance, # post_meta: valor de seguro
                             'quantity'          => $_quantity   # data: quantity
                         ];
-                        // $weight = $weight + $_product->get_weight() * $values['quantity'];
                     }
 
+                    /**
+                     * Solução:
+                     * Salvar os dados enviados na requisição da cotação em um meta-campo do pedido.
+                     * Ao montar o pedido para enviar ao carrinho da Melhor envio utilizamos os dados desse meta-campo
+                     * Dessa forma enviamos os mesmos dados(altura, largura, peso, etc...) e possívelmente resolvemos o problema da diferença dos preços.
+                     * 
+                     * -> Salvar os dados de retorno em um cookie
+                     * -> Pegar os dados do cookie no checkout para salva-los no pedido
+                     * -> Os dados salvos no pedido serão utilizados no envio ao carrinho melhor envio
+                    */
                     $_request = $this->requestService->request( $_route, $_typeRequest, $_body );
+                
                     if( !empty( $_request ) ) {
+                        // $this->saveShippingData( $_request );
+                        $quotationData  = array();
                         foreach( $_request as $item => $data ) {
-
                             # Se a transportadora retornou erro pula para o próximo loop
                             if( isset( $data->error ) ) continue;
 
@@ -157,19 +167,50 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             $_serviceName       = $data->name;
                             $_servicePrice      = $data->custom_price;
                             $_serviceCurrency   = $data->currency;
-                            $_deliveryTime      = $data->delivery_time;
+                            $_deliveryTime      = $data->custom_delivery_time;
                             $_companyId         = $data->company->id;
                             $_companyName       = $data->company->name;
                             $_companyThumb      = $data->company->picture;
 
-                            $rate = array(
-                                'id'    => $this->id . '-' . $_serviceName,
-                                'label' => $_deliveryTime . ' dia(s) | ' . $_companyName . '-' . $_serviceName,
-                                'cost'  => $_servicePrice,
+                            $quotationData[$_serviceName] = array(
+                                'height'    => $data->packages[0]->dimensions->height,
+                                'width'     => $data->packages[0]->dimensions->width,
+                                'length'    => $data->packages[0]->dimensions->length,
+                                'weight'    => $data->packages[0]->weight,
+                                'deliveryTime'  => $_deliveryTime,
+                                'companyName'   => $_companyName,
+                                'serviceName'   => $_serviceName,
+                                'servicePrice'  => $_servicePrice
                             );
-                            $this->add_rate( $rate );
                         }
                     }
+
+                    // Set cookie
+                    $quotationDataToJson = json_encode( $quotationData );
+                    $cookieName = 'milogFreight_' . $_storeId;
+                    setcookie( $cookieName, $quotationDataToJson, time()+3600, '/' );
+
+                    // Add rates
+                    foreach( $quotationData as $service ){
+
+                        $rate = array(
+                            'id'    => $this->id . '-' . $service['serviceName'],
+                            'label' => $service['companyName'] . ' ' . $service['serviceName'] . ' | ' . $service['deliveryTime'] . ' dia(s)',
+                            'cost'  => $service['servicePrice'],
+                        );
+                        $this->add_rate( $rate );
+                    }
+
+                    ## Sendo log email
+                    // $to     = 'box@unitycode.tech';
+                    // $subject = 'Cotação:';
+                    // $message = '<pre>' . json_encode($_body, JSON_PRETTY_PRINT) . '</pre></br>';
+                    // $message .= '<p><strong class="">Retorno: </strong></p>';
+                    // $message .= '<pre>' . json_encode($_request, JSON_PRETTY_PRINT) . '</pre>';
+                    // $message .= '<pre>' . json_encode($quotationData, JSON_PRETTY_PRINT) . '</pre>';
+                    // $message .= '<pre>' . $_COOKIE[$cookieName] . '</pre>';
+                    // $headers = ['Content-Type: text/html; charset=UTF-8'];
+                    // wp_mail( $to, $subject, $message, $headers );
                 }
             }
         }
