@@ -413,4 +413,39 @@ class Milog_Helpers{
 
         return $sanitizedData;
     }
+
+    /**
+     * Retornar todos os vendedores em um pedido
+     * 
+     * @param integer $order_id
+     * @return array $storeVendors
+     */
+    public function sanitizeStoreVendorsInOrder( $order_id )
+    {
+        $storeVendors = array();
+        if( function_exists( 'wcfm_get_vendor_store_by_post' ) ) {
+            $order = wc_get_order( $order_id );
+            if( is_a( $order , 'WC_Order' ) ) {
+                $items = $order->get_items( 'line_item' );
+                if( !empty( $items ) ) {
+                    foreach( $items as $orderItemID => $item ) {
+                        $line_item  = new WC_Order_Item_Product( $item );
+                        $product    = $line_item->get_product();
+                        $productId  = $line_item->get_product_id();
+                        $vendorId   = wcfm_get_vendor_id_by_post( $productId );
+                        
+                        if( !$vendorId ) continue;
+                        if( in_array( $vendorId, $storeVendors ) ) continue;
+                        
+                        $storeName = wcfm_get_vendor_store( $vendorId );
+                        if( $storeName ) {
+                            $storeVendors[$vendorId] = $storeName;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $storeVendors;
+    }
 }
