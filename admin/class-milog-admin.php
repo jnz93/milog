@@ -82,6 +82,8 @@ class Milog_Admin {
 		 * Actions & Filters
 		 */
 		add_action( 'woocommerce_order_status_changed', array( $this, 'when_order_is_completed' ), 99, 4 );
+
+		add_action( 'woocommerce_checkout_order_processed', array( $this, 'action_checkout_order_processed' ), 10, 3 );
 	}
 
 	/**
@@ -159,6 +161,26 @@ class Milog_Admin {
 			} else {
 				# Enviar mensagem de erro
 			}
+		}
+	}
+
+	/**
+	 * Salvar dados retornados pela cotação no pedido
+	 * 
+	 * @param integer $order_id
+	 * @param object/mixed $posted_data
+	 * @param object $order
+	 */
+	public function action_checkout_order_processed( $order_id, $posted_data, $order ) {
+		
+		$vendors 	= $this->helpers->sanitizeStoreVendorsInOrder( $order_id );
+		if( empty( $vendors ) ) return;
+
+		foreach( $vendors as $vendorId => $data ){
+			$meta_key 	= '_milogFreight_' . $vendorId;
+			$meta_value = $_COOKIE[$meta_key];
+			
+			update_post_meta( $order_id, $meta_key, $meta_value );
 		}
 	}
 }
