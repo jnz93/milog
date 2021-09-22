@@ -329,9 +329,8 @@ class Milog_Helpers{
         $body               = $bodyStructure;
         $structure          = array();
         foreach( $bodyStructure as $key => $data ){
-            $methodTitle = explode( ' | ' , $data['method_title'] );
-            $methodTitle = explode( '-', $methodTitle[1] );
-            $methodTitle = trim( $methodTitle[1] );
+            $methodTitle    = explode( ' ' , $data['method_title'] );
+            $methodTitle    = trim( $methodTitle[1] );
             $structure = array(
                 'service'   => $availableServices[$methodTitle]['id'],
                 'type'      => $availableServices[$methodTitle]['type'],
