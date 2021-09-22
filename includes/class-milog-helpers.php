@@ -448,4 +448,41 @@ class Milog_Helpers{
 
         return $storeVendors;
     }
+
+    /**
+     * Retorna uma lista de serviços de entrega contratados no pedido
+     * organizada por vendedores
+     * 
+     * @param integer $order_id
+     * @return string $shippingServices
+     */
+    public function sanitizeShippingServicesInOrder( $order_id )
+    {
+        $order              = wc_get_order( $order_id );
+        $shippingServices   = array();
+        $shippingData       = $order->get_shipping_methods();
+
+        foreach( $shippingData as $id => $data ){
+            # Get store
+            $storeId        = $data->get_meta( 'vendor_id', true);
+            $store          = get_user_meta( $storeId, 'wcfmmp_profile_settings', true );
+            $storeName      = $store['store_name'];
+            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $store['store_name'] ) );
+
+            # Get method title
+            $itemData           = $data->get_data();
+            $shippingName       = $itemData['name'];
+            $shippingTitle      = $itemData['method_title'];
+            if( strlen( $shippingName ) == 0 ){
+                $shippingName = $shippingTitle;
+            }
+
+            # Sanitize service name
+            $shippingName = explode( ' ', $shippingName );
+            if( !empty( $shippingName ) ){
+                $shippingServices[$storeSlug] = trim($shippingName[1]);
+            }
+        }
+        return $shippingServices;
+    }
 }
