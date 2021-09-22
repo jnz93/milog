@@ -301,18 +301,15 @@ class Milog_Helpers{
         if( empty( $order ) ) return;
 
         # Definição dos serviços de entrega selecionados pelo cliente na compra
-        $data           = $order->get_items('shipping');
+        $shippingData   = $order->get_items('shipping');
         $bodyStructure  = array();
-        foreach( $data as $id => $item )
+        foreach( $shippingData as $key => $data )
         {
-            $itemData       = $item->get_data();
+            $itemData       = $data->get_data();
             $deliveryTitle  = $itemData['method_title'];
-            $storeId        = $item->get_meta('vendor_id');
-            $store          = get_user_meta( $storeId, 'wcfmmp_profile_settings', true );
-            $storeName      = $store['store_name'];
-            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $storeName ) );
+            $storeId        = $data->get_meta('vendor_id');
             
-            $bodyStructure[$storeSlug] = array(
+            $bodyStructure[$storeId] = array(
                 'method_title'  => $deliveryTitle,
             );
         }
