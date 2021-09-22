@@ -143,17 +143,6 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             'quantity'          => $_quantity   # data: quantity
                         ];
                     }
-
-                    /**
-                     * Solução:
-                     * Salvar os dados enviados na requisição da cotação em um meta-campo do pedido.
-                     * Ao montar o pedido para enviar ao carrinho da Melhor envio utilizamos os dados desse meta-campo
-                     * Dessa forma enviamos os mesmos dados(altura, largura, peso, etc...) e possívelmente resolvemos o problema da diferença dos preços.
-                     * 
-                     * -> Salvar os dados de retorno em um cookie
-                     * -> Pegar os dados do cookie no checkout para salva-los no pedido
-                     * -> Os dados salvos no pedido serão utilizados no envio ao carrinho melhor envio
-                    */
                     $_request = $this->requestService->request( $_route, $_typeRequest, $_body );
                 
                     if( !empty( $_request ) ) {
@@ -187,7 +176,7 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
 
                     // Set cookie
                     $quotationDataToJson = json_encode( $quotationData );
-                    $cookieName = 'milogFreight_' . $_storeId;
+                    $cookieName = '_milogFreight_' . $_storeId;
                     setcookie( $cookieName, $quotationDataToJson, time()+3600, '/' );
 
                     // Add rates
@@ -200,17 +189,6 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                         );
                         $this->add_rate( $rate );
                     }
-
-                    ## Sendo log email
-                    // $to     = 'box@unitycode.tech';
-                    // $subject = 'Cotação:';
-                    // $message = '<pre>' . json_encode($_body, JSON_PRETTY_PRINT) . '</pre></br>';
-                    // $message .= '<p><strong class="">Retorno: </strong></p>';
-                    // $message .= '<pre>' . json_encode($_request, JSON_PRETTY_PRINT) . '</pre>';
-                    // $message .= '<pre>' . json_encode($quotationData, JSON_PRETTY_PRINT) . '</pre>';
-                    // $message .= '<pre>' . $_COOKIE[$cookieName] . '</pre>';
-                    // $headers = ['Content-Type: text/html; charset=UTF-8'];
-                    // wp_mail( $to, $subject, $message, $headers );
                 }
             }
         }
