@@ -49,7 +49,7 @@ class Milog_Ticket
         $bodyStructure      = $this->helpers->getStoreAddressFromOrder( $bodyStructure, $order ); # Get Address from
         $bodyStructure      = $this->helpers->getCustomerAddressFromOrder( $bodyStructure, $order ); # Get Address To
         $bodyStructure      = $this->helpers->getProductsFromOrder( $bodyStructure, $order ); # Get products from order
-        $bodyStructure      = $this->helpers->sanitizeProductsVolumes( $bodyStructure, $order); # Get volumes from products order
+        $bodyStructure      = $this->helpers->sanitizeFreightVolumes( $bodyStructure, $order); # Get volumes from products order
         $bodyStructure      = $this->helpers->setupOptions( $bodyStructure, $order ); # Get options setup
 
         return $bodyStructure;
