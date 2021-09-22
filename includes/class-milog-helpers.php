@@ -32,16 +32,14 @@ class Milog_Helpers{
         # Coletando o endereço das lojas no pedido
         foreach( $products as $item_id => $item ){
             $product_id     = $item->get_product_id();
-            $store_id       = wcfm_get_vendor_id_by_post( $product_id );
-            $store          = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-            $storeName      = $store['store_name'];
-            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $store['store_name'] ) );
+            $storeId        = wcfm_get_vendor_id_by_post( $product_id );
+            $store          = get_user_meta( $storeId, 'wcfmmp_profile_settings', true );
             $storeLocation  = $store['address'];
             $storeNumber    = explode( ',', $storeLocation['street_1'] );
             $storeNumber    = $storeNumber[1];
 
-            if( array_key_exists( $storeSlug, $dataFrom ) ) continue;
-            $dataFrom[$storeSlug] = [
+            if( array_key_exists( $storeId, $dataFrom ) ) continue;
+            $dataFrom[$storeId] = [
                 'name'              => $store['store_name'],
                 'phone'             => str_replace( ['(', ')', '-', ' '], ['', '', '', ''], $store['phone'] ),
                 'email'             => $store['store_email'],
