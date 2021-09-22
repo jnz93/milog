@@ -463,11 +463,8 @@ class Milog_Helpers{
         $shippingData       = $order->get_shipping_methods();
 
         foreach( $shippingData as $id => $data ){
-            # Get store
+            # Get store id
             $storeId        = $data->get_meta( 'vendor_id', true);
-            $store          = get_user_meta( $storeId, 'wcfmmp_profile_settings', true );
-            $storeName      = $store['store_name'];
-            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $store['store_name'] ) );
 
             # Get method title
             $itemData           = $data->get_data();
@@ -480,7 +477,7 @@ class Milog_Helpers{
             # Sanitize service name
             $shippingName = explode( ' ', $shippingName );
             if( !empty( $shippingName ) ){
-                $shippingServices[$storeSlug] = trim($shippingName[1]);
+                $shippingServices[$storeId] = trim( $shippingName[1] );
             }
         }
         return $shippingServices;
