@@ -140,21 +140,20 @@ class Milog_Helpers{
         foreach( $products as $key => $item ){
 
             $product_id     = $item->get_product_id();
-            $store_id       = wcfm_get_vendor_id_by_post( $product_id );
-            $store          = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-            $storeName      = $store['store_name'];
-            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $store['store_name'] ) );
+            $storeId        = wcfm_get_vendor_id_by_post( $product_id );
             
             $product            = $item->get_product();
             $productName        = $product->get_name();
             $productPrice       = $product->get_price();
             $productQuantity    = $item->get_quantity();
+            $productWeight      = get_post_meta( $product_id, '_weight', true );
 
             # Atribuindo os produtos para respectiva loja em $body
-            $body[$storeSlug]['products'][] = [
+            $body[$storeId]['products'][] = [
                 'name'          => $productName,
                 'quantity'      => $productQuantity,
                 'unitary_value' => $productPrice,
+                'weight'        => $productWeight,
             ];
         }
         return $body;
