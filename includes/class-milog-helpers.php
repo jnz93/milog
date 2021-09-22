@@ -161,56 +161,30 @@ class Milog_Helpers{
     }
 
     /**
-     * Coleta dos volumes de produtos no pedido
-     * retorna $body com os volumes do pedido
+     * Retorna os volumes do pacote de frete por loja
      * 
-     * PS: Podemos modificar o array de produtos para receber os valores dos volumes. 
-     * Dessa forma recebemos os $products e apenas somamos seus volumes, sem necessidade interação com o objeto $order
-     * 
+     * @param object $body
      * @param object $order
-     * @return array $volumes
+     * @return array $body
      */
-    public function sanitizeProductsVolumes( $body, $order )
+    public function sanitizeFreightVolumes( $body, $order )
     {
-        $products           = $order->get_items();
-        if( empty( $products ) ) return;
+        $orderId            = $order->get_id();
+        $volumes            = array();
+        $metaKeys           = array();
+        $shippingServices   = $this->sanitizeShippingServicesInOrder( $orderId );
+        foreach( $body as $key => $data ){
 
-        $volumes = array();
-        foreach( $products as $product => $item ){
-            $productId      = $item->get_product_id();
-            $store_id       = wcfm_get_vendor_id_by_post( $productId );
-            $store          = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-            $storeName      = $store['store_name'];
-            $storeSlug      = !empty( $store['store_slug'] ) ? $store['store_slug'] : str_replace( ' ', '-', strtolower( $store['store_name'] ) );
-            
-            $volumes[$storeSlug][] = [
-                'weight'    => get_post_meta( $productId, '_weight', true ),
-                'length'    => get_post_meta( $productId, '_length', true ),
-                'width'     => get_post_meta( $productId, '_width', true ),
-                'height'    => get_post_meta( $productId, '_height', true ),
-            ];
-        }
+            $metaKey            = '_milogFreight_' . $key;
+            $storeFreightData   = json_decode(get_post_meta( $orderId, $metaKey, true ));
+            $service            = $shippingServices[$key];
+            $freightData        = $storeFreightData->$service;
 
-        # Definindo os volumes por loja no $body
-        foreach( $volumes as $store => $data ){
-            $_weight    = 0;
-            $_length    = 0;
-            $_width     = 0;
-            $_height    = 0;
-
-            foreach( $data as $item => $value ){
-                $_weight    += $value['weight'];
-                $_length    += $value['length'];
-                $_width     += $value['width'];
-                $_height    += $value['height'];
-            }
-
-            # Inserindo o total dos volumes na respectiva loja dentro de $body
-            $body[$store]['volumes'][] = [
-                'height'    => $_height,
-                'width'     => $_width,
-                'length'    => $_length,
-                'weight'    => $_weight,
+            $body[$key]['volumes'][] = [
+                'height'    => $freightData->height,
+                'width'     => $freightData->width,
+                'length'    => $freightData->length,
+                'weight'    => $freightData->weight,
             ];
         }
         return $body;
