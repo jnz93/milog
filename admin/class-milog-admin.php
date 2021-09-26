@@ -84,6 +84,11 @@ class Milog_Admin {
 		add_action( 'woocommerce_order_status_changed', array( $this, 'when_order_is_completed' ), 99, 4 );
 
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'action_checkout_order_processed' ), 10, 3 );
+
+		/**
+		 * Shortcodes
+		 */
+		add_shortcode( 'milogAuth', array( $this, 'milogAuthMelhorEnvio' ) );
 	}
 
 	/**
@@ -182,5 +187,49 @@ class Milog_Admin {
 			
 			update_post_meta( $order_id, $meta_key, $meta_value );
 		}
+	}
+
+	public function milogAuthMelhorEnvio( $atts )
+	{
+		$a = shortcode_atts( 
+			[
+				'color'	=> 'default',
+				'size'	=> 'default',
+				'type'	=> 'type_1'
+			], 
+			$atts
+		);
+
+		$code 		= $_GET['code'];
+		$codeExists = false;
+		$content 	= '';
+
+		# Checking code exists
+		if( $code && !empty($code) ){
+			$codeExists = true;
+		}
+
+		if( $codeExists ){
+
+			$key 		= '_me_auth_code';
+			update_option( $key, $code );
+			$savedCode 	= get_option( $key );
+			$content 	= '<h2 class="">Autorização do applicativo configurada com sucesso!</h2>';
+			$content 	.= '<pre>'. $savedCode .'</pre>';
+
+		} else {
+
+			$url 			= 'https://sandbox.melhorenvio.com.br';
+			$clientId 		= '2257';
+			$callbackURI 	= 'https://mercadoindustria.com.br/autorizacao-melhor-envio';
+			$scope 			= 'cart-read cart-write shipping-calculate companies-read orders-read purchases-read shipping-cancel shipping-checkout shipping-companies shipping-generate shipping-print shipping-tracking ecommerce-shipping';
+			$location 		= $url . '/oauth/authorize?client_id='. $clientId .'&redirect_uri='. $callbackURI .'&response_type=code&state=teste&scope='. $scope;
+			$authButton 	= '<a href="'. $location .'" class="">Autorizar Aplicativo</a> ';
+
+			$content 		= $authButton;
+
+		}
+		
+		return $content;
 	}
 }
