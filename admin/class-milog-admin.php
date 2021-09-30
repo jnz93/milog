@@ -210,20 +210,24 @@ class Milog_Admin {
 		}
 
 		if( $codeExists ){
-
+			$tokenService       = new Milog_Token_Service();
 			$key 		= '_me_auth_code';
 			update_option( $key, $code );
 			$savedCode 	= get_option( $key );
 			$content 	= '<h2 class="">Autorização do applicativo configurada com sucesso!</h2>';
-			$content 	.= '<pre>'. $savedCode .'</pre>';
+			$content 	.= '<div id="containerGetToken" class="">
+				<p class="">Clique no botão abaixo para solicitar um token para uso.</p>
+				<button class="uk-button uk-button-default" onclick="tokenRequest()">Solicitar Token</button>
+			</div>';
+			$content 	.= '<div id="containerResult" class=""></div>';
 
 		} else {
 
 			$url 			= 'https://sandbox.melhorenvio.com.br';
-			$clientId 		= '2257';
+			$clientId 		= 2271;
 			$callbackURI 	= 'https://mercadoindustria.com.br/autorizacao-melhor-envio';
-			$scope 			= 'cart-read cart-write shipping-calculate companies-read orders-read purchases-read shipping-cancel shipping-checkout shipping-companies shipping-generate shipping-print shipping-tracking ecommerce-shipping';
-			$location 		= $url . '/oauth/authorize?client_id='. $clientId .'&redirect_uri='. $callbackURI .'&response_type=code&state=teste&scope='. $scope;
+			$scope 			= 'cart-read cart-write companies-read companies-write coupons-read coupons-write notifications-read orders-read products-read products-write purchases-read shipping-calculate shipping-cancel shipping-checkout shipping-companies shipping-generate shipping-preview shipping-print shipping-share shipping-tracking ecommerce-shipping transactions-read users-read users-write';
+			$location 		= $url . '/oauth/authorize?client_id='. $clientId .'&redirect_uri='. $callbackURI .'&response_type=code&scope='. $scope;
 			$authButton 	= '<a href="'. $location .'" class="">Autorizar Aplicativo</a> ';
 
 			$content 		= $authButton;
