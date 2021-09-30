@@ -19,16 +19,22 @@ class Milog_Request_Service
 	const TIME_LIMIT_LOG_REQUEST = 1000;
 
 	protected $token;
+	protected $tokenType;
+	protected $url;
 	protected $headers;
 	protected $headersCompanies;
-	protected $url;
 	protected $headersCart;
+	protected $headersAuth;
+	protected $tokenService;
 
 	public function __construct()
 	{
-		$this->token 	= 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImE3YzVkYTE2NGNmMDU3NjlhYTZiNzFkNzc4MDk1ZGUxODlkYzgxOGI2NmM0YmE3MmZmNzBjMmMxZWQzNWZkYzBhNThhNjFiZjNkZGJjNjk1In0.eyJhdWQiOiI5NTYiLCJqdGkiOiJhN2M1ZGExNjRjZjA1NzY5YWE2YjcxZDc3ODA5NWRlMTg5ZGM4MThiNjZjNGJhNzJmZjcwYzJjMWVkMzVmZGMwYTU4YTYxYmYzZGRiYzY5NSIsImlhdCI6MTYyNzU4NDU3NywibmJmIjoxNjI3NTg0NTc3LCJleHAiOjE2NTkxMjA1NzcsInN1YiI6IjlmZDdhMDZjLWNlYmMtNDQ1Ny05ZGJlLTNjYTExOTg3OTg4MSIsInNjb3BlcyI6WyJjYXJ0LXJlYWQiLCJjYXJ0LXdyaXRlIiwiY29tcGFuaWVzLXJlYWQiLCJjb21wYW5pZXMtd3JpdGUiLCJjb3Vwb25zLXJlYWQiLCJjb3Vwb25zLXdyaXRlIiwibm90aWZpY2F0aW9ucy1yZWFkIiwib3JkZXJzLXJlYWQiLCJwcm9kdWN0cy1yZWFkIiwicHJvZHVjdHMtZGVzdHJveSIsInByb2R1Y3RzLXdyaXRlIiwicHVyY2hhc2VzLXJlYWQiLCJzaGlwcGluZy1jYWxjdWxhdGUiLCJzaGlwcGluZy1jYW5jZWwiLCJzaGlwcGluZy1jaGVja291dCIsInNoaXBwaW5nLWNvbXBhbmllcyIsInNoaXBwaW5nLWdlbmVyYXRlIiwic2hpcHBpbmctcHJldmlldyIsInNoaXBwaW5nLXByaW50Iiwic2hpcHBpbmctc2hhcmUiLCJzaGlwcGluZy10cmFja2luZyIsImVjb21tZXJjZS1zaGlwcGluZyIsInRyYW5zYWN0aW9ucy1yZWFkIiwidXNlcnMtcmVhZCIsInVzZXJzLXdyaXRlIiwid2ViaG9va3MtcmVhZCIsIndlYmhvb2tzLXdyaXRlIl19.EgJDvhQOEXmPM_-tfme1w_g2F9DZDfHyjixHoE6iPqMbTdD_yNwSW9XaQtXGoRI-pLtSTfhVWzJbrVvo_4TuJj9AzKC3FEKC5ikDHpe8BAOKQ8lAJUtr1ySg85ew7d42kqEJpUf01XCzW_tUnzBxFKMzpB2D9ofZpd77_tJ0BHoRtS7vVdnGa1Olrc4cMt9aHHPiVRrDKnxXJUGKCVWOv173G1-7OP98ow9w6KuGsWHSXFd5_5-m-PvvObskfVlzc-Ccs3sg23UEZpYjUvnUkETWMAYmGQfJMMHCGRmoCA3I6yoy5q9aV__LnvI1A2x7aHQvOpUmoIVAPw-XwmAjNgpiqFhPve05n5o7IcQVdgXXKLHahPMWyz2Y-K4W_gCsrpglwZVLV-Y2k1BRUVGckD5YCgasq86qQnA2qWch_yluOHNmUdFi3CwAD-KDaQlhSSscnevjg62zcmDQ06mbetwKP1x7loeLsPRmC0tqKU_yzSaV5LR7P8h6C4o77EgkmiqCuBKDiSiYLDaAUaGdixPxPNE1dvWKwDHTqzaHtZBHv_0qT5o0qakuGXZQOKSV63m0esH6ioEVgkBjd6c9S0JnRPsOcx2bZuZFER75pKcI7Oee5gfNlEmdoQqjTIdHIPNxuSk3inZ-KrOGReEFYAHhitStPMy62rjHubeTJiI';
-		$this->url 		= self::SANDBOX_URL;
-		$this->headers 	= array(
+		$this->tokenService = new Milog_Token_Service();
+		$this->tokenType 	= $this->tokenService->getTypeToken();
+		$this->token 		= $this->tokenService->getToken();
+		$this->url 			= self::SANDBOX_URL;
+
+		$this->headers 		= array(
 			'Accept'		=> 'application/json',
 			'Content-Type'	=> 'application/json',
 			'Authorization'	=> 'Bearer ' . $this->token,
@@ -39,8 +45,13 @@ class Milog_Request_Service
 		);
 		$this->headersCart 	= array(
 			'Accept' 		=> 'application/json',
-			'Authorization'	=> 'Bearer ' . $this->token,
+			'Authorization'	=> $this->tokenType . ' ' . $this->token,
 			'User-Agent' 	=> 'Aplicação Mercado Indústria logs@unitycode.tech'
+		);
+		$this->headersAuth = array(
+			'Accept'		=> 'application/json',
+			'Content-Type'	=> 'application/json',
+			'User-Agent'	=> 'Mercado Indústria (logs@unitycode.tech)'
 		);
 	}
 
@@ -123,23 +134,22 @@ class Milog_Request_Service
 			$body = json_encode( $body );
 		}
 
+		$fucking_url = 'https://sandbox.melhorenvio.com.br';
+
 		$params 	= array(
-			// 'headers'	=> $this->headers,
+			'headers'	=> $this->headersAuth,
 			'method'	=> $typeRequest,
 			'body'		=> $body,
-			'timeout'	=> self::TIMEOUT
+			// 'timeout'	=> 0
 		);
 
 		$time_pre 	= microtime( true );
 
-		$responseRemote = wp_remote_request( $this->url . $route );
+		$responseRemote = wp_remote_post( $fucking_url . $route, $params );
 		$response 		= json_decode(
 			wp_remote_retrieve_body( $responseRemote )
 		);
 
-		echo '<pre>';
-		print_r($responseRemote);
-		echo '</pre>';
 		$time_post 	= microtime( true );
 		$exec_time 	= round( ( $time_post - $time_pre ) * 1000 );
 		
@@ -172,7 +182,6 @@ class Milog_Request_Service
 				'errors'	=> $errors,
 			];
 		}
-
 		return $response;
 	}
 
