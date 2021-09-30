@@ -47,6 +47,7 @@ class Milog_Public {
 	private $requestService;
 	private $ticketService;
 	private $helpers;
+	private $tokenService;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -63,6 +64,7 @@ class Milog_Public {
 		$this->requestService	= new Milog_Request_Service();
 		$this->ticketService 	= new Milog_Ticket();
 		$this->helpers          = new Milog_Helpers();
+		$this->tokenService     = new Milog_Token_Service();
 
 		/**
 		 * Enqueue scripts
@@ -87,6 +89,9 @@ class Milog_Public {
 		 */
 		add_action( 'wp_ajax_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
 		add_action( 'wp_ajax_nopriv_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
+
+		# Token request
+		add_action( 'wp_ajax_milog_token_request', array( $this, 'milog_token_request_callback') );
 
 		/**
 		 * Add spinner actions
@@ -419,5 +424,21 @@ class Milog_Public {
 	{
 		$output = '<div id="container-spinner" class="disabled-spinner"><div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>';
 		echo $output;
+	}
+
+	/**
+	 * Action que recebe a solicitação do token e retorna um novo
+	 * 
+	 */
+	public function milog_token_request_callback()
+	{
+		$request = $this->tokenService->getDataToken();
+		if( empty($request) ) return;
+
+		$data 		= $request;
+		$is_saved 	= $this->tokenService->saveToken( $data );
+
+		echo $is_saved;
+		die();
 	}
 }

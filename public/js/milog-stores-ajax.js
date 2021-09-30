@@ -59,3 +59,37 @@ function milogTicketRequest(el){
         
     });
 }
+
+function tokenRequest( ){
+
+    var body = {};
+    body.action     = 'milog_token_request';
+    body.nonce      = storeAjax.nonce;
+
+    jQuery.ajax({
+        url: storeAjax.url,
+        type: 'POST',
+        data: body,
+        beforeSend: function(xhr){
+            console.log('carregando...');
+            jQuery('#container-spinner').removeClass('disabled-spinner');
+        },
+        error: function( err ){
+            console.log('[Milog Store Request Error]');
+            console.log(err);
+        }
+    })
+    .done( function( response ){
+        jQuery('#container-spinner').addClass('disabled-spinner');
+        
+        var message = '<p class="">Token obtido e salvo com sucesso!</p>';
+        
+        if( response != 1 ){
+            message = '<p class="">Erro. Por favor, tente novamente mais tarde.</p>';
+        }
+
+        jQuery('#containerGetToken').hide();
+        jQuery('#containerResult').append(message);
+    });
+
+}
