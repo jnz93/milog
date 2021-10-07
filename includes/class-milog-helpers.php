@@ -102,7 +102,7 @@ class Milog_Helpers{
             'address'           => $customerAddress,
             'complement'        => "Complemento",
             'number'            => $customerNumber,
-            'district'          => "Bairro",
+            'district'          => $customerNeighborhood,
             'city'              => $customerCity,
             'state_abbr'        => $customerState,
             'country_id'        => $customerCountry,
