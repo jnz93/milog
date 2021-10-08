@@ -335,6 +335,7 @@ class Milog_Helpers{
                 'service'   => $availableServices[$methodTitle]['id'],
                 'type'      => $availableServices[$methodTitle]['type'],
                 'company'   => $availableServices[$methodTitle]['company'],
+                'agency'    => 49,
             );
             $bodyStructure[$key] = $structure;
         }
