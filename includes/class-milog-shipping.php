@@ -142,7 +142,7 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             'length'            => $_length,    # post_meta: length
                             'weight'            => $_weight,    # post_meta: weight
                             'insurance_value'   => $_insurance, # post_meta: valor de seguro
-                            'quantity'          => $_quantity   # data: quantity
+                            'quantity'          => (string) $_quantity   # data: quantity
                         ];
                     }
                     $_body['options'] = array(
