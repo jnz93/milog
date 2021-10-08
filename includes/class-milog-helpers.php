@@ -177,12 +177,14 @@ class Milog_Helpers{
             $service            = $shippingServices[$key];
             $freightData        = $storeFreightData->$service;
 
-            $body[$key]['volumes'][] = [
-                'height'    => $freightData->height,
-                'width'     => $freightData->width,
-                'length'    => $freightData->length,
-                'weight'    => $freightData->weight,
-            ];
+            foreach( $freightData->packages as $package ){
+                $body[$key]['volumes'][] = [
+                    'height'    => $package->height,
+                    'width'     => $package->width,
+                    'length'    => $package->length,
+                    'weight'    => $package->weight,
+                ];
+            }
         }
         return $body;
     }
