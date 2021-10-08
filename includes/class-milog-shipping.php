@@ -129,7 +129,7 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                         $_product   = $data['data'];
                         $_quantity  = $data['quantity'];
                         $_name      = $_product->get_name();
-                        $_insurance = $_product->get_price() * $_quantity;
+                        $_insurance = $_product->get_price();
                         $_weight    = $_product->get_weight();
                         $_width     = $_product->get_width();
                         $_height    = $_product->get_height();
