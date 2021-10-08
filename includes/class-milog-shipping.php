@@ -117,6 +117,8 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                     # Settings Request params
                     $_route             = '/shipment/calculate';
                     $_typeRequest       = 'POST';
+
+                    // Criando payload de cotação
                     $_body              = array();
                     $_body['from']      = [ 'postal_code' => $_storeZipCode ];
                     $_body['to']        = [ 'postal_code' => $_destZipCode ];
@@ -143,8 +145,13 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             'quantity'          => $_quantity   # data: quantity
                         ];
                     }
+                    $_body['options'] = array(
+                        'receipt'   => false,
+                        'own_hand'  => false,
+                    );
                     $_request = $this->requestService->request( $_route, $_typeRequest, $_body );
-                
+                                    
+                    /** Criando payload do cookie */
                     if( !empty( $_request ) ) {
                         // $this->saveShippingData( $_request );
                         $quotationData  = array();
