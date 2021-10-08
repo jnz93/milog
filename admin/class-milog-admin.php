@@ -158,7 +158,34 @@ class Milog_Admin {
 		if( !empty( $freightsToCart ) ){
 			$ticketsInCart = array();
 			foreach( $freightsToCart as $storeFreight => $data ){
-				$ticketsInCart[$storeFreight] = $this->requestService->request( $this->routeCart, $this->typeRequestPost, $data );
+				
+				/**
+				 * Identificar se a transportadora é os correios
+				 * Identificar se o volume é maior que 1
+				 */
+				if( $data['company'] == 'Correios' && count( $data['volumes'] ) > 1 ){
+					// Tratamento dos dados
+					// Cada volume/pacote deve ser um ticket
+					$volumes 		= $data['volumes'];
+					$unitaryWeight 	= $data['products'][0]['weight'];
+					$unityVal 		= $data['products'][0]['unitary_value'];
+					$newData 		= array();
+
+					foreach( $volumes as $package ){
+						$qty 				= $package['weight'] / $unitaryWeight;
+						$insuranceVal 		= $qty * $unityVal;
+						$data['volumes'] 	= array($package);
+
+						$newData[] = $data;
+					}
+
+					// Requisição das etiquetas
+					foreach( $newData as $data ){
+						$ticketsInCart[$storeFreight][] = $this->requestService->request( $this->routeCart, $this->typeRequestPost, $data );
+					}
+				} else {
+					$ticketsInCart[$storeFreight] = $this->requestService->request( $this->routeCart, $this->typeRequestPost, $data );
+				}
 			}
 			
 			if( !empty( $ticketsInCart ) ){
