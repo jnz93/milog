@@ -169,15 +169,20 @@ if( in_array('woocommerce/woocommerce.php', apply_filters( 'active_plugins', get
                             $_companyThumb      = $data->company->picture;
 
                             $quotationData[$_serviceName] = array(
-                                'height'    => $data->packages[0]->dimensions->height,
-                                'width'     => $data->packages[0]->dimensions->width,
-                                'length'    => $data->packages[0]->dimensions->length,
-                                'weight'    => $data->packages[0]->weight,
                                 'deliveryTime'  => $_deliveryTime,
                                 'companyName'   => $_companyName,
                                 'serviceName'   => $_serviceName,
                                 'servicePrice'  => $_servicePrice
                             );
+                            
+                            foreach( $data->packages as $package ){
+                                $quotationData[$_serviceName]['packages'][] = [
+                                    'height'    => $package->dimensions->height,
+                                    'width'     => $package->dimensions->width,
+                                    'length'    => $package->dimensions->length,
+                                    'weight'    => $package->weight,
+                                ];
+                            }
                         }
                     }
 
