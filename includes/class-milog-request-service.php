@@ -11,7 +11,7 @@
 class Milog_Request_Service
 {
 	# Config Costants 
-	const URL  			= 'https://api.melhorenvio.com/v2/me';
+	const URL  			= 'https://melhorenvio.com.br/api/v2/me';
 	const SANDBOX_URL 	= 'https://sandbox.melhorenvio.com.br/api/v2/me';
 	const TIMEOUT 		= 10;
 
@@ -32,7 +32,7 @@ class Milog_Request_Service
 		$this->tokenService = new Milog_Token_Service();
 		$this->tokenType 	= $this->tokenService->getTypeToken();
 		$this->token 		= $this->tokenService->getToken();
-		$this->url 			= self::SANDBOX_URL;
+		$this->url 			= self::URL;
 
 		$this->headers 		= array(
 			'Accept'		=> 'application/json',
@@ -45,12 +45,11 @@ class Milog_Request_Service
 		);
 		$this->headersCart 	= array(
 			'Accept' 		=> 'application/json',
-			'Authorization'	=> $this->tokenType . ' ' . $this->token,
+			'Authorization'	=> 'Bearer ' . $this->token,
 			'User-Agent' 	=> 'Aplicação Mercado Indústria logs@unitycode.tech'
 		);
 		$this->headersAuth = array(
 			'Accept'		=> 'application/json',
-			'Content-Type'	=> 'application/json',
 			'User-Agent'	=> 'Mercado Indústria (logs@unitycode.tech)'
 		);
 	}
