@@ -12,10 +12,10 @@ class Milog_Token_Service{
 
     protected $requestService;
 
-    public function __construct(){
+    public function __construct()
+    {
         // $this->requestService   = new Milog_Request_Service();
     }
-    
 
     /**
      * Método responsável por salvar o token e dados retornados da requisição getDataToken()
@@ -38,9 +38,8 @@ class Milog_Token_Service{
     public function getData(){
         $key    = '_milog_data_token';
         $data   = get_option( $key );
-        $dataToObj = json_decode( $data );
 
-        return $dataToObj;
+        return $data;
     }
 
     /**
@@ -50,7 +49,7 @@ class Milog_Token_Service{
     public function getToken()
     {
         $data = $this->getData();
-        return $data->access_token;
+        return $data['access_token'];
     }
 
     /**
@@ -60,7 +59,7 @@ class Milog_Token_Service{
     public function getRefreshToken()
     {
         $data = $this->getData();
-        return $data->refresh_token;
+        return $data['refresh_token'];
     }
 
     /**
@@ -70,7 +69,7 @@ class Milog_Token_Service{
     public function getExperationToken()
     {
         $data = $this->getData();
-        return $data->expires_in;
+        return $data['expires_in'];
     }
 
     /**
@@ -80,6 +79,6 @@ class Milog_Token_Service{
     public function getTypeToken()
     {
         $data = $this->getData();
-        return $data->token_type;
+        return $data['token_type'];
     }
 }
