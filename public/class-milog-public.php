@@ -90,8 +90,8 @@ class Milog_Public {
 		add_action( 'wp_ajax_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
 		add_action( 'wp_ajax_nopriv_milog_store_service_request', array( $this, 'milog_store_service_request_callback') );
 
-		# Token request
-		add_action( 'wp_ajax_milog_token_request', array( $this, 'milog_token_request_callback') );
+		# Token save data
+		add_action( 'wp_ajax_milog_save_token', array( $this, 'milog_token_request_callback') );
 
 		/**
 		 * Add spinner actions
@@ -432,11 +432,8 @@ class Milog_Public {
 	 */
 	public function milog_token_request_callback()
 	{
-		$request = $this->tokenService->getDataToken();
-		if( empty($request) ) return;
-
-		$data 		= $request;
-		$is_saved 	= $this->tokenService->saveToken( $data );
+		$tokenData 	= $_POST['token'];
+		$is_saved 	= $this->tokenService->saveToken( $tokenData );
 
 		echo $is_saved;
 		die();
