@@ -132,3 +132,44 @@ function getToken()
         sendTokenToBackEnd(response);
     });
 }
+
+/**
+ * Função responsável por enviar o token para ser salvo no backend
+ * 
+ * @param {*} token 
+ */
+function sendTokenToBackEnd( token )
+{
+    var body = {};
+    body.action     = 'milog_save_token';
+    body.nonce      = storeAjax.nonce;
+    body.token      = token;
+
+    jQuery.ajax({
+        url: storeAjax.url,
+        type: 'POST',
+        data: body,
+        beforeSend: function(xhr){
+            console.log('carregando...');
+            jQuery('#container-spinner').removeClass('disabled-spinner');
+        },
+        error: function( err ){
+            console.log('[Milog Store Request Error]');
+            console.log(err);
+        }
+    })
+    .done( function( response ){
+        jQuery('#container-spinner').addClass('disabled-spinner');
+        
+        console.log('[MILOG SendTokenToBackEnd]');
+        console.log(response);
+        var message = '<p class="">Token obtido e salvo com sucesso!</p>';
+        
+        if( response != 1 ){
+            message = '<p class="">Erro. Por favor, tente novamente mais tarde.</p>';
+        }
+
+        jQuery('#containerGetToken').hide();
+        jQuery('#containerResult').append(message);
+    });
+}
