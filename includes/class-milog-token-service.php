@@ -16,37 +16,6 @@ class Milog_Token_Service{
         // $this->requestService   = new Milog_Request_Service();
     }
     
-    /**
-     * Metodo responsável por solicitar o token de acesso. 
-     * Será retornado um array contendo o tipo do token, o tempo de expiração, o token de acesso e o refresh token;
-     *  
-     */
-    public function getDataToken()
-    {
-        $authCode = get_option( '_me_auth_code' );
-        if( ! $authCode ){
-            return 'Código de autorização inválido!';
-        }
-
-        $route          = '/oauth/token';
-        $typeRequest    = 'POST';
-        $clientId       = 2271;
-        $clientSecret   = 'sUAL9h7J8CuDDJHBSN1RfbWbZQmvj7vzToxhgQaY';
-        $redirectUri    = 'https://mercadoindustria.com.br/autorizacao-melhor-envio';
-
-        $body = array(
-            'grant_type'    => 'authorization_code',
-            'client_id'     => $clientId,
-            'client_secret' => $clientSecret,
-            'redirect_uri'  => $redirectUri,
-            'code'          => $authCode
-        );
-        $request = $this->requestService->requestAuth( $route, $typeRequest, $body );
-        $body = json_encode( $body, JSON_PRETTY_PRINT );
-        $request = json_encode( $request, JSON_PRETTY_PRINT );
-        
-        return $request;
-    }
 
     /**
      * Método responsável por salvar o token e dados retornados da requisição getDataToken()
