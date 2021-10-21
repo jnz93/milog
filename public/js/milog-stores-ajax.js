@@ -93,3 +93,42 @@ function tokenRequest( ){
     });
 
 }
+
+/**
+ * Função responsável por fazer a requisição do token
+ * 
+ */
+function getToken()
+{
+    var currentUrl  = window.location.href,
+        authCode    = '';
+    currentUrl      = currentUrl.split('=');
+    authCode        = currentUrl[1];
+
+    var form = new FormData();
+    form.append("grant_type", "authorization_code");
+    form.append("client_id", "5928");
+    form.append("client_secret", "ikBv0IuQLSWug5o7Cu88dhA5KZnQNLPqQ9jjnnXg");
+    form.append("redirect_uri", "https://mercadoindustria.com.br/autorizacao-melhor-envio");
+    form.append("code", authCode);
+
+    var settings = {
+        "url": "https://melhorenvio.com.br/oauth/token",
+        "method": "POST",
+        "timeout": 0,
+        "headers": {
+            "Accept": "application/json",
+            "User-Agent": "Aplicação (email para contato técnico)"
+        },
+        "processData": false,
+        "mimeType": "multipart/form-data",
+        "contentType": false,
+        "data": form
+    };
+
+    jQuery.ajax(settings).done(function (response) {
+        response = JSON.parse(response);
+        console.log(response.token_type);
+        sendTokenToBackEnd(response);
+    });
+}
