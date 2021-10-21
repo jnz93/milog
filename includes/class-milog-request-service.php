@@ -134,13 +134,17 @@ class Milog_Request_Service
 			$body = json_encode( $body );
 		}
 
-		$fucking_url = 'https://sandbox.melhorenvio.com.br';
-
+		$fucking_url = 'https://melhorenvio.com.br';
+		$headers = array(
+			'Accept'		=> 'application/json',
+			'User-Agent'	=> 'Aplicação (email para contato técnico)'
+		);
+		
 		$params 	= array(
-			'headers'	=> $this->headersAuth,
-			'method'	=> $typeRequest,
-			'body'		=> $body,
-			// 'timeout'	=> 0
+			"headers"	=> $headers,
+			"method"	=> $typeRequest,
+			"body"		=> $body,
+			"timeout"	=> 0
 		);
 
 		$time_pre 	= microtime( true );
